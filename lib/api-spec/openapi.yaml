@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: gyms
+    description: Gym occupancy operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,48 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /gyms:
+    get:
+      operationId: listGyms
+      tags: [gyms]
+      summary: List all gyms with current occupancy
+      description: Returns all gyms with their current simulated occupancy count and busyness level
+      responses:
+        "200":
+          description: List of gyms with current occupancy
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GymWithOccupancy"
+  /gyms/{id}/trends:
+    get:
+      operationId: getGymTrends
+      tags: [gyms]
+      summary: Get occupancy trends for a gym
+      description: Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Hourly trend data across all days of the week
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OccupancyTrend"
+        "404":
+          description: Gym not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +77,61 @@ components:
           type: string
       required:
         - status
-
+    GymWithOccupancy:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        shortName:
+          type: string
+        location:
+          type: string
+        capacity:
+          type: integer
+        description:
+          type: string
+        currentCount:
+          type: integer
+        capacityPercent:
+          type: number
+        busynessLevel:
+          type: string
+          enum: [quiet, moderate, busy, very_busy]
+      required:
+        - id
+        - name
+        - shortName
+        - location
+        - capacity
+        - description
+        - currentCount
+        - capacityPercent
+        - busynessLevel
+    OccupancyTrend:
+      type: object
+      properties:
+        gymId:
+          type: integer
+        hour:
+          type: integer
+        dayOfWeek:
+          type: integer
+        avgCount:
+          type: integer
+        capacityPercent:
+          type: number
+      required:
+        - gymId
+        - hour
+        - dayOfWeek
+        - avgCount
+        - capacityPercent
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

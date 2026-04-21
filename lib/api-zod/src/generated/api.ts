@@ -14,3 +14,37 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Returns all gyms with their current simulated occupancy count and busyness level
+ * @summary List all gyms with current occupancy
+ */
+export const ListGymsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  shortName: zod.string(),
+  location: zod.string(),
+  capacity: zod.number(),
+  description: zod.string(),
+  currentCount: zod.number(),
+  capacityPercent: zod.number(),
+  busynessLevel: zod.enum(["quiet", "moderate", "busy", "very_busy"]),
+});
+export const ListGymsResponse = zod.array(ListGymsResponseItem);
+
+/**
+ * Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
+ * @summary Get occupancy trends for a gym
+ */
+export const GetGymTrendsParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const GetGymTrendsResponseItem = zod.object({
+  gymId: zod.number(),
+  hour: zod.number(),
+  dayOfWeek: zod.number(),
+  avgCount: zod.number(),
+  capacityPercent: zod.number(),
+});
+export const GetGymTrendsResponse = zod.array(GetGymTrendsResponseItem);

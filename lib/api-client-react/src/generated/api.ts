@@ -13,7 +13,12 @@ import type {
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  GymWithOccupancy,
+  HealthStatus,
+  OccupancyTrend,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
 import type { ErrorType } from "../custom-fetch";
@@ -92,6 +97,162 @@ export function useHealthCheck<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getHealthCheckQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Returns all gyms with their current simulated occupancy count and busyness level
+ * @summary List all gyms with current occupancy
+ */
+export const getListGymsUrl = () => {
+  return `/api/gyms`;
+};
+
+export const listGyms = async (
+  options?: RequestInit,
+): Promise<GymWithOccupancy[]> => {
+  return customFetch<GymWithOccupancy[]>(getListGymsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListGymsQueryKey = () => {
+  return [`/api/gyms`] as const;
+};
+
+export const getListGymsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listGyms>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listGyms>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListGymsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listGyms>>> = ({
+    signal,
+  }) => listGyms({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listGyms>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListGymsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listGyms>>
+>;
+export type ListGymsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all gyms with current occupancy
+ */
+
+export function useListGyms<
+  TData = Awaited<ReturnType<typeof listGyms>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<Awaited<ReturnType<typeof listGyms>>, TError, TData>;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListGymsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
+ * @summary Get occupancy trends for a gym
+ */
+export const getGetGymTrendsUrl = (id: number) => {
+  return `/api/gyms/${id}/trends`;
+};
+
+export const getGymTrends = async (
+  id: number,
+  options?: RequestInit,
+): Promise<OccupancyTrend[]> => {
+  return customFetch<OccupancyTrend[]>(getGetGymTrendsUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetGymTrendsQueryKey = (id: number) => {
+  return [`/api/gyms/${id}/trends`] as const;
+};
+
+export const getGetGymTrendsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getGymTrends>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getGymTrends>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetGymTrendsQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGymTrends>>> = ({
+    signal,
+  }) => getGymTrends(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getGymTrends>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetGymTrendsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getGymTrends>>
+>;
+export type GetGymTrendsQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Get occupancy trends for a gym
+ */
+
+export function useGetGymTrends<
+  TData = Awaited<ReturnType<typeof getGymTrends>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getGymTrends>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetGymTrendsQueryOptions(id, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

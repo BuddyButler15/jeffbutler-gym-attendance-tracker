@@ -8,3 +8,37 @@
 export interface HealthStatus {
   status: string;
 }
+
+export type GymWithOccupancyBusynessLevel =
+  (typeof GymWithOccupancyBusynessLevel)[keyof typeof GymWithOccupancyBusynessLevel];
+
+export const GymWithOccupancyBusynessLevel = {
+  quiet: "quiet",
+  moderate: "moderate",
+  busy: "busy",
+  very_busy: "very_busy",
+} as const;
+
+export interface GymWithOccupancy {
+  id: number;
+  name: string;
+  shortName: string;
+  location: string;
+  capacity: number;
+  description: string;
+  currentCount: number;
+  capacityPercent: number;
+  busynessLevel: GymWithOccupancyBusynessLevel;
+}
+
+export interface OccupancyTrend {
+  gymId: number;
+  hour: number;
+  dayOfWeek: number;
+  avgCount: number;
+  capacityPercent: number;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
