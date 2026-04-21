@@ -5,10 +5,7 @@ import { z } from "zod/v4";
 export const gymsTable = pgTable("gyms", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  shortName: text("short_name").notNull(),
-  location: text("location").notNull(),
   capacity: integer("capacity").notNull(),
-  description: text("description").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

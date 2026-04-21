@@ -6,8 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./checkinBody";
+export * from "./checkinResponse";
 export * from "./errorResponse";
 export * from "./gymWithOccupancy";
 export * from "./gymWithOccupancyBusynessLevel";
 export * from "./healthStatus";
-export * from "./occupancyTrend";
+export * from "./sessionStatus";

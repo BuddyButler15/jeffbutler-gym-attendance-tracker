@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gym Attendance Tracker — University of Iowa</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #1a1a1a;
+      --gold: #FFCD00;
+      --gold-dark: #e6b800;
+      --white: #ffffff;
+      --gray-50: #f9f9f9;
+      --gray-100: #f0f0f0;
+      --gray-300: #cccccc;
+      --gray-500: #777777;
+      --gray-700: #444444;
+      --radius: 12px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--black);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    nav .brand {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    nav .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+    }
+    nav .nav-link:hover { opacity: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--black);
+      color: var(--white);
+      padding: 6rem 2rem 5rem;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--black);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      max-width: 700px;
+      margin: 0 auto 1.25rem;
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero p {
+      font-size: 1.15rem;
+      opacity: 0.75;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--black);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.85rem 2rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: var(--white);
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0.85rem 2rem;
+      border-radius: var(--radius);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .btn-secondary:hover { border-color: rgba(255,255,255,0.7); }
+
+    /* ── PROBLEM STRIP ── */
+    .problem {
+      background: var(--gold);
+      padding: 2rem;
+      text-align: center;
+    }
+    .problem p {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--black);
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .section {
+      padding: 5rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      margin-bottom: 0.6rem;
+    }
+    .section h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 3rem;
+    }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+    .step {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+    }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--black);
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .step p { font-size: 0.9rem; color: var(--gray-700); }
+
+    /* ── GYMS ── */
+    .gyms-section { background: var(--gray-50); padding: 5rem 2rem; }
+    .gyms-inner { max-width: 900px; margin: 0 auto; }
+    .gym-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-top: 3rem;
+    }
+    .gym-card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .gym-card h3 { font-size: 1.05rem; font-weight: 700; }
+    .gym-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      background: var(--gray-100);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    /* ── FOOTER CTA ── */
+    .footer-cta {
+      background: var(--black);
+      color: var(--white);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+    .footer-cta h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+    .footer-cta p { opacity: 0.7; margin-bottom: 2rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid #2a2a2a;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    footer p { color: var(--gray-500); font-size: 0.82rem; }
+    footer strong { color: var(--gray-300); }
+  </style>
+</head>
+<body>
+
+  <nav aria-label="Main navigation">
+    <a href="landing.html" class="brand">GAT</a>
+    <a href="product.html" class="nav-link">About</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <span class="hero-eyebrow">University of Iowa</span>
+    <h1 id="hero-heading">Know how busy the gym is <span>before you go</span></h1>
+    <p>Gym Attendance Tracker lets students check in when they arrive and check out when they leave — giving everyone a live headcount for each facility.</p>
+    <div class="cta-group">
+      <a href="/" class="btn-primary" aria-label="Open the Gym Attendance Tracker app">Open the App</a>
+      <a href="product.html" class="btn-secondary">Learn More</a>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <div class="problem" role="note">
+    <p>"I walked all the way to the CRWC and couldn't get a bench. I had 45 minutes to work out." &mdash; Every UI student, ever.</p>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section" aria-labelledby="how-heading">
+    <p class="section-label">How it works</p>
+    <h2 id="how-heading">Three steps. No account needed.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" aria-hidden="true">1</div>
+        <h3>Pick your gym</h3>
+        <p>See a live count of how many students are currently checked in at CRWC, Field House, and Fitness East.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" aria-hidden="true">2</div>
+        <h3>Check in when you arrive</h3>
+        <p>Tap "Check In" the moment you walk through the door. Your count is added to the live total.</p>
+      </div>
+      <div class="step">
+        <div class="step-num" aria-hidden="true">3</div>
+        <h3>Check out when you leave</h3>
+        <p>Tap "Check Out" on your way out. The count drops in real time for everyone watching.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GYMS -->
+  <section class="gyms-section" aria-labelledby="gyms-heading">
+    <div class="gyms-inner">
+      <p class="section-label">Supported locations</p>
+      <h2 id="gyms-heading">Three UI rec facilities, all in one place</h2>
+      <div class="gym-list">
+        <div class="gym-card">
+          <h3>CRWC</h3>
+          <span class="gym-tag">Campus Recreation &amp; Wellness Center</span>
+          <p style="font-size:0.88rem;color:#555;margin-top:0.25rem;">The main rec facility — fitness equipment, pools, courts, climbing wall.</p>
+        </div>
+        <div class="gym-card">
+          <h3>Field House</h3>
+          <span class="gym-tag">Historic facility</span>
+          <p style="font-size:0.88rem;color:#555;margin-top:0.25rem;">Weight room and indoor track at the heart of campus, great between classes.</p>
+        </div>
+        <div class="gym-card">
+          <h3>Fitness East</h3>
+          <span class="gym-tag">East Campus</span>
+          <p style="font-size:0.88rem;color:#555;margin-top:0.25rem;">Cardio and strength training on the east side — often the quietest option.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER CTA -->
+  <section class="footer-cta" aria-labelledby="cta-heading">
+    <h2 id="cta-heading">Stop guessing. Start checking in.</h2>
+    <p>Takes five seconds. No account, no app download, no hassle.</p>
+    <a href="/" class="btn-primary" aria-label="Open the Gym Attendance Tracker app">Open the App</a>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Gym Attendance Tracker &mdash; designed for University of Iowa students by <strong>Buddy Butler</strong></p>
+  </footer>
+
+</body>
+</html>

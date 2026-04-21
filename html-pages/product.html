@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Gym Attendance Tracker</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #1a1a1a;
+      --gold: #FFCD00;
+      --gold-dark: #e6b800;
+      --white: #ffffff;
+      --gray-50: #f9f9f9;
+      --gray-100: #f0f0f0;
+      --gray-300: #cccccc;
+      --gray-500: #777777;
+      --gray-700: #444444;
+      --radius: 12px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      background: var(--black);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    nav .brand {
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+    nav .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      transition: opacity 0.15s;
+    }
+    nav .nav-link:hover { opacity: 1; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: var(--black);
+      color: var(--white);
+      padding: 4rem 2rem 3.5rem;
+      text-align: center;
+    }
+    .page-header .eyebrow {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--black);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.2rem;
+    }
+    .page-header h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+    .page-header p {
+      opacity: 0.7;
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ── CONTENT ── */
+    .content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+
+    .content h2 {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-top: 3rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--gold);
+      display: inline-block;
+    }
+    .content p {
+      font-size: 1rem;
+      color: var(--gray-700);
+      margin-bottom: 1rem;
+    }
+
+    /* ── FEATURE LIST ── */
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin: 1rem 0 1.5rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      font-size: 0.97rem;
+      color: var(--gray-700);
+    }
+    .feature-list li::before {
+      content: "";
+      display: block;
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin-top: 0.5rem;
+    }
+
+    /* ── USER SECTION ── */
+    .persona-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      border-left: 4px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .persona-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .persona-card p { font-size: 0.93rem; color: var(--gray-700); margin-bottom: 0; }
+
+    /* ── METRICS TABLE ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.93rem;
+    }
+    thead th {
+      background: var(--black);
+      color: var(--gold);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    tbody tr:nth-child(even) { background: var(--gray-50); }
+    tbody td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ── AUTHOR ── */
+    .author-block {
+      background: var(--black);
+      color: var(--white);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-top: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .author-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--black);
+      flex-shrink: 0;
+    }
+    .author-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .author-info p { font-size: 0.88rem; opacity: 0.7; }
+
+    /* ── CTA ── */
+    .cta-strip {
+      background: var(--gold);
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .cta-strip h2 {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .cta-strip p { color: var(--gray-700); margin-bottom: 1.75rem; }
+    .btn-dark {
+      display: inline-block;
+      background: var(--black);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 0.85rem 2rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-dark:hover { opacity: 0.85; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+    footer p { color: var(--gray-500); font-size: 0.82rem; }
+    footer strong { color: var(--gray-300); }
+  </style>
+</head>
+<body>
+
+  <nav aria-label="Main navigation">
+    <a href="landing.html" class="brand">GAT</a>
+    <a href="landing.html" class="nav-link">Home</a>
+  </nav>
+
+  <header class="page-header" aria-labelledby="page-title">
+    <span class="eyebrow">Product Overview</span>
+    <h1 id="page-title">Gym Attendance Tracker</h1>
+    <p>A crowd-sourced check-in tool built for busy University of Iowa students who want to plan smarter workouts.</p>
+  </header>
+
+  <main class="content">
+
+    <h2>The Problem</h2>
+    <p>Students at the University of Iowa balance heavy course loads, jobs, and extracurriculars. When they carve out 45 minutes to work out, the last thing they can afford is arriving at an overcrowded gym. There is currently no way to know how busy a facility is before you walk through the door.</p>
+
+    <h2>The Solution</h2>
+    <p>Gym Attendance Tracker (GAT) is a simple, crowd-sourced check-in app. Students tap <strong>Check In</strong> when they arrive at a gym and <strong>Check Out</strong> when they leave. The live count is visible to anyone — no account required.</p>
+    <p>Over time, as more students use the app, the counts become increasingly accurate. GAT grows more useful with every check-in.</p>
+
+    <h2>Who It Is For</h2>
+    <div class="persona-card">
+      <h3>The Busy Undergraduate</h3>
+      <p>A frequent exerciser — four or more sessions per week — juggling a demanding schedule. They want confidence that they can complete their full workout routine without spending half of it waiting for equipment. GAT gives them the information they need to decide: go now, go later, or pick a different facility.</p>
+    </div>
+
+    <h2>Key Features</h2>
+    <ul class="feature-list" aria-label="Key features">
+      <li>Live check-in counts for CRWC, Field House, and Fitness East</li>
+      <li>One-tap check-in and check-out — no account or login required</li>
+      <li>Anonymous session tracking stored in the browser</li>
+      <li>Busyness indicator (Quiet / Moderate / Busy / Very Busy) based on current headcount</li>
+      <li>Counts auto-refresh every 30 seconds</li>
+      <li>Check-ins auto-expire after 3 hours so stale data never accumulates</li>
+      <li>Fully mobile-responsive for checking on the go</li>
+    </ul>
+
+    <h2>Success Metrics</h2>
+    <table aria-label="Product success metrics">
+      <thead>
+        <tr>
+          <th scope="col">Metric</th>
+          <th scope="col">Type</th>
+          <th scope="col">Goal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Students who complete their planned workout</td>
+          <td>Lagging indicator</td>
+          <td>Increase over baseline</td>
+        </tr>
+        <tr>
+          <td>Self-reported stress when entering the gym</td>
+          <td>Leading indicator</td>
+          <td>Decrease via survey</td>
+        </tr>
+        <tr>
+          <td>Gym visits where occupancy matched expectations</td>
+          <td>Leading indicator</td>
+          <td>Increase over baseline</td>
+        </tr>
+        <tr>
+          <td>Number of active check-ins per day</td>
+          <td>Engagement</td>
+          <td>Grow week over week</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>How the Data Works</h2>
+    <p>GAT uses crowd-sourced data. There is no integration with the university's ID card scanner system — the counts represent students who have checked in through this app. Accuracy improves with adoption. Each check-in is anonymous and expires automatically after three hours.</p>
+    <p>The goal is to pitch the concept to University of Iowa Rec Services and eventually integrate with their existing infrastructure for real-time, institution-wide occupancy data.</p>
+
+    <div class="author-block" aria-label="Product designer">
+      <div class="author-avatar" aria-hidden="true">BB</div>
+      <div class="author-info">
+        <h3>Designed by Buddy Butler</h3>
+        <p>University of Iowa &mdash; Product Design Project, 2025</p>
+      </div>
+    </div>
+
+  </main>
+
+  <section class="cta-strip" aria-labelledby="cta-title">
+    <h2 id="cta-title">Try it now</h2>
+    <p>Check-in takes five seconds. No account, no download.</p>
+    <a href="/" class="btn-dark" aria-label="Open the Gym Attendance Tracker app">Open the App</a>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Gym Attendance Tracker &mdash; designed for University of Iowa students by <strong>Buddy Butler</strong></p>
+  </footer>
+
+</body>
+</html>

@@ -10,11 +10,7 @@ import type { GymWithOccupancyBusynessLevel } from "./gymWithOccupancyBusynessLe
 export interface GymWithOccupancy {
   id: number;
   name: string;
-  shortName: string;
-  location: string;
   capacity: number;
-  description: string;
   currentCount: number;
-  capacityPercent: number;
   busynessLevel: GymWithOccupancyBusynessLevel;
 }

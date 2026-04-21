@@ -31,32 +31,51 @@ See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and pa
 ### Gym Attendance Tracker (`artifacts/gat-web`)
 - **Type**: React + Vite web app
 - **Preview path**: `/`
-- **Purpose**: Pitch-ready prototype showing simulated real-time gym occupancy at University of Iowa rec facilities.
+- **Purpose**: Crowd-sourced student check-in app for University of Iowa rec facilities. Students self-check-in/out to provide live headcounts. Branding: "Buddy Butler".
 - **Features**:
-  - Dashboard with 4 UI rec facility cards (CRWC, Field House, HTRC, UCC Fitness)
-  - Live simulated occupancy counts auto-refreshing every 45 seconds
-  - Busyness level badges (quiet / moderate / busy / very busy)
-  - Click any gym to open a weekly trend chart (recharts bar chart by hour, day-selectable)
-  - "About this data" section explaining the prototype context
-  - Fully responsive / mobile-first
+  - 3 gym cards: CRWC, Field House, Fitness East (no addresses)
+  - Live check-in counts per gym (crowd-sourced from student check-ins)
+  - Busyness level bar and label (Quiet / Moderate / Busy / Very Busy)
+  - One-tap Check In / Check Out — no account required
+  - Anonymous session ID stored in localStorage
+  - Prevents double-check-in across gyms (409 response)
+  - Check-ins auto-expire after 3 hours
+  - Counts auto-refresh every 30 seconds
+  - "by Buddy Butler" branding in header
 
 ### API Server (`artifacts/api-server`)
 - **Type**: Express 5 API
 - **Base path**: `/api`
 - **Routes**:
-  - `GET /api/gyms` — returns all gyms with current simulated occupancy
-  - `GET /api/gyms/:id/trends` — returns 7 × 24 hourly trend data for a gym
+  - `GET /api/gyms` — returns all 3 gyms with live check-in counts + busynessLevel
+  - `POST /api/gyms/:id/checkin` — body `{sessionId}`, checks student in; 409 if already checked in elsewhere
+  - `POST /api/gyms/:id/checkout` — body `{sessionId}`, checks student out; 404 if not checked in here
+  - `GET /api/gyms/session/:sessionId` — returns `{sessionId, checkedInGymId}` (null if not checked in)
   - `GET /api/healthz` — health check
 
 ## Database Schema
 
-- **gyms** — id, name, short_name, location, capacity, description, created_at
-  - Seeded with 4 UI rec facilities
+### `gyms` table
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial PK | Auto-increment |
+| name | text | "CRWC", "Field House", "Fitness East" |
+| capacity | integer | Max occupancy (350, 150, 120) |
+| created_at | timestamptz | Auto set |
 
-## Simulation Engine
+### `checkins` table
+| Column | Type | Notes |
+|--------|------|-------|
+| id | serial PK | Auto-increment |
+| gym_id | integer FK | References gyms.id |
+| session_id | text | UUID from browser localStorage |
+| checked_in_at | timestamptz | Auto set |
+| checked_out_at | timestamptz | Null until checked out; expires after 3 hours |
 
-`artifacts/api-server/src/lib/occupancy-simulator.ts` — computes realistic occupancy based on:
-- Time of day (hour 0–23)
-- Day of week (weekday vs weekend patterns)
-- Small random ±8% variance so numbers feel live
-- Peak hours: lunch (12–1pm) and after class/evening (4–8pm)
+## Static HTML Pages
+
+Located in `html-pages/`:
+- `landing.html` — Marketing landing page with hero, how-it-works, gym list, CTAs; links to the app
+- `product.html` — Product overview page: problem, solution, user persona, features, success metrics, author block
+
+Both pages use Iowa black/gold color scheme, plain HTML/CSS (no framework), WCAG 2.1 AA compliant.

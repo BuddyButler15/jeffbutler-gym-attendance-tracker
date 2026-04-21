@@ -8,7 +8,6 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -16,35 +15,59 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
- * Returns all gyms with their current simulated occupancy count and busyness level
- * @summary List all gyms with current occupancy
+ * @summary List all gyms with current check-in count
  */
 export const ListGymsResponseItem = zod.object({
   id: zod.number(),
   name: zod.string(),
-  shortName: zod.string(),
-  location: zod.string(),
   capacity: zod.number(),
-  description: zod.string(),
   currentCount: zod.number(),
-  capacityPercent: zod.number(),
   busynessLevel: zod.enum(["quiet", "moderate", "busy", "very_busy"]),
 });
 export const ListGymsResponse = zod.array(ListGymsResponseItem);
 
 /**
- * Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
- * @summary Get occupancy trends for a gym
+ * @summary Get which gym a session is currently checked into
  */
-export const GetGymTrendsParams = zod.object({
+export const GetSessionStatusParams = zod.object({
+  sessionId: zod.coerce.string(),
+});
+
+export const GetSessionStatusResponse = zod.object({
+  sessionId: zod.string(),
+  checkedInGymId: zod.number().nullable(),
+});
+
+/**
+ * @summary Check in to a gym
+ */
+export const CheckInGymParams = zod.object({
   id: zod.coerce.number(),
 });
 
-export const GetGymTrendsResponseItem = zod.object({
-  gymId: zod.number(),
-  hour: zod.number(),
-  dayOfWeek: zod.number(),
-  avgCount: zod.number(),
-  capacityPercent: zod.number(),
+export const CheckInGymBody = zod.object({
+  sessionId: zod.string(),
 });
-export const GetGymTrendsResponse = zod.array(GetGymTrendsResponseItem);
+
+export const CheckInGymResponse = zod.object({
+  success: zod.boolean(),
+  gymId: zod.number().nullable(),
+  sessionId: zod.string(),
+});
+
+/**
+ * @summary Check out of a gym
+ */
+export const CheckOutGymParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const CheckOutGymBody = zod.object({
+  sessionId: zod.string(),
+});
+
+export const CheckOutGymResponse = zod.object({
+  success: zod.boolean(),
+  gymId: zod.number().nullable(),
+  sessionId: zod.string(),
+});

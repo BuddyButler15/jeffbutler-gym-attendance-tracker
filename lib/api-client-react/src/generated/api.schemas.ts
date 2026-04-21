@@ -22,21 +22,26 @@ export const GymWithOccupancyBusynessLevel = {
 export interface GymWithOccupancy {
   id: number;
   name: string;
-  shortName: string;
-  location: string;
   capacity: number;
-  description: string;
   currentCount: number;
-  capacityPercent: number;
   busynessLevel: GymWithOccupancyBusynessLevel;
 }
 
-export interface OccupancyTrend {
-  gymId: number;
-  hour: number;
-  dayOfWeek: number;
-  avgCount: number;
-  capacityPercent: number;
+export interface CheckinBody {
+  sessionId: string;
+}
+
+export interface CheckinResponse {
+  success: boolean;
+  /** @nullable */
+  gymId: number | null;
+  sessionId: string;
+}
+
+export interface SessionStatus {
+  sessionId: string;
+  /** @nullable */
+  checkedInGymId: number | null;
 }
 
 export interface ErrorResponse {

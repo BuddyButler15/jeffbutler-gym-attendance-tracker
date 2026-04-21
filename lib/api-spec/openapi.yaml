@@ -11,14 +11,13 @@ tags:
   - name: health
     description: Health operations
   - name: gyms
-    description: Gym occupancy operations
+    description: Gym check-in operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -30,40 +29,90 @@ paths:
     get:
       operationId: listGyms
       tags: [gyms]
-      summary: List all gyms with current occupancy
-      description: Returns all gyms with their current simulated occupancy count and busyness level
+      summary: List all gyms with current check-in count
       responses:
         "200":
-          description: List of gyms with current occupancy
+          description: List of gyms with live check-in counts
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: "#/components/schemas/GymWithOccupancy"
-  /gyms/{id}/trends:
+  /gyms/session/{sessionId}:
     get:
-      operationId: getGymTrends
+      operationId: getSessionStatus
       tags: [gyms]
-      summary: Get occupancy trends for a gym
-      description: Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
+      summary: Get which gym a session is currently checked into
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Session check-in status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SessionStatus"
+  /gyms/{id}/checkin:
+    post:
+      operationId: checkInGym
+      tags: [gyms]
+      summary: Check in to a gym
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckinBody"
       responses:
         "200":
-          description: Hourly trend data across all days of the week
+          description: Successfully checked in
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/OccupancyTrend"
+                $ref: "#/components/schemas/CheckinResponse"
+        "409":
+          description: Already checked in somewhere
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /gyms/{id}/checkout:
+    post:
+      operationId: checkOutGym
+      tags: [gyms]
+      summary: Check out of a gym
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckinBody"
+      responses:
+        "200":
+          description: Successfully checked out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckinResponse"
         "404":
-          description: Gym not found
+          description: Not currently checked in here
           content:
             application/json:
               schema:
@@ -84,50 +133,49 @@ components:
           type: integer
         name:
           type: string
-        shortName:
-          type: string
-        location:
-          type: string
         capacity:
           type: integer
-        description:
-          type: string
         currentCount:
           type: integer
-        capacityPercent:
-          type: number
         busynessLevel:
           type: string
           enum: [quiet, moderate, busy, very_busy]
       required:
         - id
         - name
-        - shortName
-        - location
         - capacity
-        - description
         - currentCount
-        - capacityPercent
         - busynessLevel
-    OccupancyTrend:
+    CheckinBody:
       type: object
       properties:
-        gymId:
-          type: integer
-        hour:
-          type: integer
-        dayOfWeek:
-          type: integer
-        avgCount:
-          type: integer
-        capacityPercent:
-          type: number
+        sessionId:
+          type: string
       required:
+        - sessionId
+    CheckinResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        gymId:
+          type: ["integer", "null"]
+        sessionId:
+          type: string
+      required:
+        - success
         - gymId
-        - hour
-        - dayOfWeek
-        - avgCount
-        - capacityPercent
+        - sessionId
+    SessionStatus:
+      type: object
+      properties:
+        sessionId:
+          type: string
+        checkedInGymId:
+          type: ["integer", "null"]
+      required:
+        - sessionId
+        - checkedInGymId
     ErrorResponse:
       type: object
       properties:

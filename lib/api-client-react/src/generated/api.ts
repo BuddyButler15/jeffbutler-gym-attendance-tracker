@@ -5,23 +5,28 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
 import type {
+  CheckinBody,
+  CheckinResponse,
   ErrorResponse,
   GymWithOccupancy,
   HealthStatus,
-  OccupancyTrend,
+  SessionStatus,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -30,7 +35,6 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const getHealthCheckUrl = () => {
@@ -106,8 +110,7 @@ export function useHealthCheck<
 }
 
 /**
- * Returns all gyms with their current simulated occupancy count and busyness level
- * @summary List all gyms with current occupancy
+ * @summary List all gyms with current check-in count
  */
 export const getListGymsUrl = () => {
   return `/api/gyms`;
@@ -154,7 +157,7 @@ export type ListGymsQueryResult = NonNullable<
 export type ListGymsQueryError = ErrorType<unknown>;
 
 /**
- * @summary List all gyms with current occupancy
+ * @summary List all gyms with current check-in count
  */
 
 export function useListGyms<
@@ -174,35 +177,34 @@ export function useListGyms<
 }
 
 /**
- * Returns simulated average occupancy by hour and day of week (7 days x 24 hours)
- * @summary Get occupancy trends for a gym
+ * @summary Get which gym a session is currently checked into
  */
-export const getGetGymTrendsUrl = (id: number) => {
-  return `/api/gyms/${id}/trends`;
+export const getGetSessionStatusUrl = (sessionId: string) => {
+  return `/api/gyms/session/${sessionId}`;
 };
 
-export const getGymTrends = async (
-  id: number,
+export const getSessionStatus = async (
+  sessionId: string,
   options?: RequestInit,
-): Promise<OccupancyTrend[]> => {
-  return customFetch<OccupancyTrend[]>(getGetGymTrendsUrl(id), {
+): Promise<SessionStatus> => {
+  return customFetch<SessionStatus>(getGetSessionStatusUrl(sessionId), {
     ...options,
     method: "GET",
   });
 };
 
-export const getGetGymTrendsQueryKey = (id: number) => {
-  return [`/api/gyms/${id}/trends`] as const;
+export const getGetSessionStatusQueryKey = (sessionId: string) => {
+  return [`/api/gyms/session/${sessionId}`] as const;
 };
 
-export const getGetGymTrendsQueryOptions = <
-  TData = Awaited<ReturnType<typeof getGymTrends>>,
-  TError = ErrorType<ErrorResponse>,
+export const getGetSessionStatusQueryOptions = <
+  TData = Awaited<ReturnType<typeof getSessionStatus>>,
+  TError = ErrorType<unknown>,
 >(
-  id: number,
+  sessionId: string,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getGymTrends>>,
+      Awaited<ReturnType<typeof getSessionStatus>>,
       TError,
       TData
     >;
@@ -211,48 +213,50 @@ export const getGetGymTrendsQueryOptions = <
 ) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetGymTrendsQueryKey(id);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetSessionStatusQueryKey(sessionId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getGymTrends>>> = ({
-    signal,
-  }) => getGymTrends(id, { signal, ...requestOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getSessionStatus>>
+  > = ({ signal }) =>
+    getSessionStatus(sessionId, { signal, ...requestOptions });
 
   return {
     queryKey,
     queryFn,
-    enabled: !!id,
+    enabled: !!sessionId,
     ...queryOptions,
   } as UseQueryOptions<
-    Awaited<ReturnType<typeof getGymTrends>>,
+    Awaited<ReturnType<typeof getSessionStatus>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetGymTrendsQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getGymTrends>>
+export type GetSessionStatusQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getSessionStatus>>
 >;
-export type GetGymTrendsQueryError = ErrorType<ErrorResponse>;
+export type GetSessionStatusQueryError = ErrorType<unknown>;
 
 /**
- * @summary Get occupancy trends for a gym
+ * @summary Get which gym a session is currently checked into
  */
 
-export function useGetGymTrends<
-  TData = Awaited<ReturnType<typeof getGymTrends>>,
-  TError = ErrorType<ErrorResponse>,
+export function useGetSessionStatus<
+  TData = Awaited<ReturnType<typeof getSessionStatus>>,
+  TError = ErrorType<unknown>,
 >(
-  id: number,
+  sessionId: string,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getGymTrends>>,
+      Awaited<ReturnType<typeof getSessionStatus>>,
       TError,
       TData
     >;
     request?: SecondParameter<typeof customFetch>;
   },
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetGymTrendsQueryOptions(id, options);
+  const queryOptions = getGetSessionStatusQueryOptions(sessionId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -260,3 +264,177 @@ export function useGetGymTrends<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Check in to a gym
+ */
+export const getCheckInGymUrl = (id: number) => {
+  return `/api/gyms/${id}/checkin`;
+};
+
+export const checkInGym = async (
+  id: number,
+  checkinBody: CheckinBody,
+  options?: RequestInit,
+): Promise<CheckinResponse> => {
+  return customFetch<CheckinResponse>(getCheckInGymUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(checkinBody),
+  });
+};
+
+export const getCheckInGymMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof checkInGym>>,
+    TError,
+    { id: number; data: BodyType<CheckinBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof checkInGym>>,
+  TError,
+  { id: number; data: BodyType<CheckinBody> },
+  TContext
+> => {
+  const mutationKey = ["checkInGym"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof checkInGym>>,
+    { id: number; data: BodyType<CheckinBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return checkInGym(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CheckInGymMutationResult = NonNullable<
+  Awaited<ReturnType<typeof checkInGym>>
+>;
+export type CheckInGymMutationBody = BodyType<CheckinBody>;
+export type CheckInGymMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Check in to a gym
+ */
+export const useCheckInGym = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof checkInGym>>,
+    TError,
+    { id: number; data: BodyType<CheckinBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof checkInGym>>,
+  TError,
+  { id: number; data: BodyType<CheckinBody> },
+  TContext
+> => {
+  return useMutation(getCheckInGymMutationOptions(options));
+};
+
+/**
+ * @summary Check out of a gym
+ */
+export const getCheckOutGymUrl = (id: number) => {
+  return `/api/gyms/${id}/checkout`;
+};
+
+export const checkOutGym = async (
+  id: number,
+  checkinBody: CheckinBody,
+  options?: RequestInit,
+): Promise<CheckinResponse> => {
+  return customFetch<CheckinResponse>(getCheckOutGymUrl(id), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(checkinBody),
+  });
+};
+
+export const getCheckOutGymMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof checkOutGym>>,
+    TError,
+    { id: number; data: BodyType<CheckinBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof checkOutGym>>,
+  TError,
+  { id: number; data: BodyType<CheckinBody> },
+  TContext
+> => {
+  const mutationKey = ["checkOutGym"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof checkOutGym>>,
+    { id: number; data: BodyType<CheckinBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return checkOutGym(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CheckOutGymMutationResult = NonNullable<
+  Awaited<ReturnType<typeof checkOutGym>>
+>;
+export type CheckOutGymMutationBody = BodyType<CheckinBody>;
+export type CheckOutGymMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Check out of a gym
+ */
+export const useCheckOutGym = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof checkOutGym>>,
+    TError,
+    { id: number; data: BodyType<CheckinBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof checkOutGym>>,
+  TError,
+  { id: number; data: BodyType<CheckinBody> },
+  TContext
+> => {
+  return useMutation(getCheckOutGymMutationOptions(options));
+};
