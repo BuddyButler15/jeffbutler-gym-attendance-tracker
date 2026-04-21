@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Link } from "wouter";
 import {
   useListGyms,
   useGetSessionStatus,
@@ -84,7 +85,12 @@ export default function Home() {
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">University of Iowa</p>
             </div>
-            <p className="text-xs text-muted-foreground pb-0.5">by Buddy Butler</p>
+            <div className="flex flex-col items-end gap-1 pb-0.5">
+              <p className="text-xs text-muted-foreground">by Buddy Butler</p>
+              <Link href="/about">
+                <a className="text-xs text-primary hover:underline">About this app</a>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
