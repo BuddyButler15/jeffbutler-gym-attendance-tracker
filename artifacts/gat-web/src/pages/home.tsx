@@ -87,8 +87,8 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-end gap-1 pb-0.5">
               <p className="text-xs text-muted-foreground">by Buddy Butler</p>
-              <Link href="/about">
-                <a className="text-xs text-primary hover:underline">About this app</a>
+              <Link href="/about" className="text-xs text-primary hover:underline">
+                About this app
               </Link>
             </div>
           </div>
