@@ -43,5 +43,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: upload
           skip_app_build: true
-          app_location: /
-          output_location: artifacts/gat-web/dist/public
+          app_location: artifacts/gat-web/dist/public
+          output_location: ""
