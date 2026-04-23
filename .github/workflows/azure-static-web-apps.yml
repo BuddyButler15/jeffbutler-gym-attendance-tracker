@@ -32,7 +32,7 @@ jobs:
         env:
           BASE_PATH: /
           PORT: 3000
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_API_URL: https://bf8000e1-405d-4f95-97a8-f2bbb9b0c4d9-00-3mm4c0n2x6ii2.picard.replit.dev
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
