@@ -204,11 +204,16 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-border mt-12">
-        <div className="max-w-2xl mx-auto px-4 py-6 text-center">
+        <div className="max-w-2xl mx-auto px-4 py-6 text-center space-y-2">
           <p className="text-xs text-muted-foreground">
             Gym Attendance Tracker &mdash; a student check-in tool for University of Iowa rec facilities.
             Data is crowd-sourced: counts reflect students who have checked in through this app.
           </p>
+          <div className="flex justify-center gap-4">
+            <Link href="/about" className="text-xs text-primary hover:underline">About</Link>
+            <Link href="/profile" className="text-xs text-primary hover:underline">About Me</Link>
+            <Link href="/terms" className="text-xs text-primary hover:underline">Terms &amp; Privacy</Link>
+          </div>
         </div>
       </footer>
     </div>
