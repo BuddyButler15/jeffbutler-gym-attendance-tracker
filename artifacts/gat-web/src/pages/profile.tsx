@@ -26,7 +26,7 @@ export default function Profile() {
           </div>
           <div>
             <h2 className="text-xl font-bold">Jeff Butler</h2>
-            <p className="text-sm text-muted-foreground">University of Iowa &mdash; Class of 2026</p>
+            <p className="text-sm text-muted-foreground">University of Iowa &mdash; Business Analytics, Class of 2027</p>
           </div>
         </div>
 
