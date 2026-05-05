@@ -24,7 +24,7 @@ export default function Profile() {
           <img
             src="/images/jeff-butler.png"
             alt="Jeff Butler"
-            className="w-20 h-20 rounded-full object-cover object-top shrink-0 border-2 border-border"
+            className="w-20 h-20 rounded-full object-cover object-[center_30%] shrink-0 border-2 border-border"
           />
           <div>
             <h2 className="text-xl font-bold">Jeff Butler</h2>
