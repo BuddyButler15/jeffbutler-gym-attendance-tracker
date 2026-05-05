@@ -27,15 +27,15 @@ export default function Profile() {
             className="w-20 h-20 rounded-full object-cover object-[center_30%] shrink-0 border-2 border-border"
           />
           <div>
-            <h2 className="text-xl font-bold">Jeff Butler</h2>
-            <p className="text-sm text-muted-foreground">University of Iowa &mdash; Business Analytics, Class of 2027</p>
+            <h2 className="text-xl font-bold">Buddy Butler</h2>
+            <p className="text-sm text-muted-foreground">University of Iowa &mdash; Business Analytics &amp; Information Systems, Class of 2027</p>
           </div>
         </div>
 
         <section className="space-y-3">
           <h3 className="font-semibold">About Me</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            I'm a student at the University of Iowa studying Business Analytics. I built Gym Attendance Tracker because I kept showing up to the CRWC only to find it packed — I wanted a simple way to check gym busyness before making the trip.
+            I'm a student at the University of Iowa studying Business Analytics and Information Systems. I built Gym Attendance Tracker because I kept showing up to the CRWC only to find it packed — I wanted a simple way to check gym busyness before making the trip.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
             GAT is a crowd-sourced check-in app that gives Iowa students real-time headcounts for CRWC, Field House, and Fitness East. The more students use it, the more accurate it gets.
