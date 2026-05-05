@@ -35,7 +35,7 @@ export default function Profile() {
         <section className="space-y-3">
           <h3 className="font-semibold">About Me</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            I'm a student at the University of Iowa studying Business. I built Gym Attendance Tracker because I kept showing up to the CRWC only to find it packed — I wanted a simple way to check gym busyness before making the trip.
+            I'm a student at the University of Iowa studying Business Analytics. I built Gym Attendance Tracker because I kept showing up to the CRWC only to find it packed — I wanted a simple way to check gym busyness before making the trip.
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
             GAT is a crowd-sourced check-in app that gives Iowa students real-time headcounts for CRWC, Field House, and Fitness East. The more students use it, the more accurate it gets.
