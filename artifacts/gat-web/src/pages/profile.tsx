@@ -21,9 +21,11 @@ export default function Profile() {
         </Link>
 
         <div className="flex items-center gap-5">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-primary-foreground shrink-0">
-            JB
-          </div>
+          <img
+            src="/images/jeff-butler.png"
+            alt="Jeff Butler"
+            className="w-20 h-20 rounded-full object-cover object-top shrink-0 border-2 border-border"
+          />
           <div>
             <h2 className="text-xl font-bold">Jeff Butler</h2>
             <p className="text-sm text-muted-foreground">University of Iowa &mdash; Business Analytics, Class of 2027</p>
